@@ -1,16 +1,16 @@
-﻿using CheckerBoard;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Checkers.ViewModels
 {
     public class BoardViewModel : BaseViewModel
     {
         private ObservableCollection<Cell> _cells;
+        private Player _currentPlayer;
 
         public ObservableCollection<Cell> Cells
         {
             get { return _cells; }
-
             set
             {
                 _cells = value;
@@ -18,9 +18,23 @@ namespace Checkers.ViewModels
             }
         }
 
+        public Player CurrentPlayer
+        {
+            get { return _currentPlayer; }
+            set
+            {
+                _currentPlayer = value;
+                OnPropertyChanged(nameof(CurrentPlayer));
+            }
+        }
+
+        public int BlackPieceCount => Cells.Count(cell => cell.Content == CheckerTypes.BlackPawn || cell.Content == CheckerTypes.BlackKing);
+        public int WhitePieceCount => Cells.Count(cell => cell.Content == CheckerTypes.WhitePawn || cell.Content == CheckerTypes.WhiteKing);
+
         public BoardViewModel()
         {
             Cells = new ObservableCollection<Cell>();
+            CurrentPlayer = Player.White; // Black este primul jucător
 
             for (int i = 0; i < 8; i++)
             {
@@ -35,8 +49,6 @@ namespace Checkers.ViewModels
                     {
                         Cells.Add(new Cell(isBlack, CheckerTypes.WhitePawn));
                     }
-
-
                     else
                     {
                         Cells.Add(new Cell(isBlack));
@@ -44,5 +56,23 @@ namespace Checkers.ViewModels
                 }
             }
         }
+
+        public void MakeMove(Cell source, Cell destination)
+        {
+            // Implementează logica mutării aici
+
+            // După ce mutarea este efectuată cu succes, schimbă jucătorul curent
+            CurrentPlayer = CurrentPlayer == Player.Black ? Player.White : Player.Black;
+
+            // Actualizează numărul de piese pentru fiecare jucător
+            OnPropertyChanged(nameof(BlackPieceCount));
+            OnPropertyChanged(nameof(WhitePieceCount));
+        }
+    }
+
+    public enum Player
+    {
+        Black,
+        White
     }
 }
