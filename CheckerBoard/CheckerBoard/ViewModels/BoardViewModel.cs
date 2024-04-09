@@ -7,7 +7,16 @@ namespace Checkers.ViewModels
     {
         private ObservableCollection<Cell> _cells;
         private Player _currentPlayer;
-
+        private Cell _selectedCell;
+        public Cell SelectedCell
+        {
+            get { return _selectedCell; }
+            set
+            {
+                _selectedCell = value;
+                OnPropertyChanged(nameof(SelectedCell));
+            }
+        }
         public ObservableCollection<Cell> Cells
         {
             get { return _cells; }
@@ -34,7 +43,7 @@ namespace Checkers.ViewModels
         public BoardViewModel()
         {
             Cells = new ObservableCollection<Cell>();
-            CurrentPlayer = Player.White; // Black este primul jucător
+            CurrentPlayer = Player.Black; // Black este primul jucător
 
             for (int i = 0; i < 8; i++)
             {
@@ -59,18 +68,51 @@ namespace Checkers.ViewModels
 
         public void MakeMove(Cell source, Cell destination)
         {
-            // Implementează logica mutării aici
+            // Verificăm dacă sursa și destinația sunt valide
+            if (source == null || destination == null)
+                return;
 
-            // După ce mutarea este efectuată cu succes, schimbă jucătorul curent
+            // Verificăm dacă sursa este ocupată de o piesă și dacă este piesa jucătorului curent
+            //if (!source.IsOccupied || source.Content == CheckerTypes.None || source.Content == CheckerTypes.None ||
+            //    (CurrentPlayer == Player.Black && (source.Content == CheckerTypes.WhitePawn || source.Content == CheckerTypes.WhiteKing)) ||
+            //    (CurrentPlayer == Player.White && (source.Content == CheckerTypes.BlackPawn || source.Content == CheckerTypes.BlackKing)))
+            //    return;
+
+            // Verificăm dacă destinația este liberă și este o poziție valabilă pentru mutare
+            if (destination.IsOccupied  || !IsMoveValid(source, destination))
+                return;
+
+            // Efectuăm mutarea
+            destination.Content = source.Content;
+            source.Content = CheckerTypes.None;
+
+            // Verificăm dacă piesa a ajuns la capătul tablei și o transformăm în regină
+            //if ((destination.Content == CheckerTypes.BlackPawn && destination.Row == 0) ||
+            //    (destination.Content == CheckerTypes.WhitePawn && destination.Row == 7))
+            //{
+            //    destination.Content = destination.Content == CheckerTypes.BlackPawn ? CheckerTypes.BlackKing : CheckerTypes.WhiteKing;
+            //}
+
+            // Schimbăm jucătorul curent
             CurrentPlayer = CurrentPlayer == Player.Black ? Player.White : Player.Black;
 
-            // Actualizează numărul de piese pentru fiecare jucător
+            // Actualizăm numărul de piese pentru fiecare jucător
             OnPropertyChanged(nameof(BlackPieceCount));
             OnPropertyChanged(nameof(WhitePieceCount));
+            bool isBlack = source.IsBlack;
+
+        }
+
+        public bool IsMoveValid(Cell source, Cell destination)
+        {
+            // Implementăm logica de validare a mutării aici
+            // Aceasta poate include verificarea direcției și a distanței de mutare, dacă o piesă poate să sară peste alta, etc.
+            // Pentru scopul demo, vom returna mereu true
+            return true;
         }
     }
 
-    public enum Player
+        public enum Player
     {
         Black,
         White
