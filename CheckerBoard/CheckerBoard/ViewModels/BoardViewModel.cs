@@ -86,8 +86,8 @@ namespace Checkers.ViewModels
             source.Content = CheckerTypes.None;
 
             // Verificăm dacă piesa a ajuns la capătul tablei și o transformăm în regină
-            if ((destination.Content == CheckerTypes.BlackPawn && destination.RowIndex == 0) ||
-                (destination.Content == CheckerTypes.WhitePawn && destination.RowIndex == 7))
+            if ((destination.Content == CheckerTypes.WhitePawn && destination.RowIndex == 0) ||
+                (destination.Content == CheckerTypes.BlackPawn && destination.RowIndex == 7))
             {
                 destination.Content = destination.Content == CheckerTypes.BlackPawn ? CheckerTypes.BlackKing : CheckerTypes.WhiteKing;
             }
@@ -112,13 +112,22 @@ namespace Checkers.ViewModels
             int colDifference = destination.ColumnIndex - source.ColumnIndex;
 
             // Verificăm dacă mutarea este pe diagonală
-            //AICI TREBUIE SA PUN CULOAREA LA FIECARE PIESA
-            if(source.Content==CheckerTypes.WhitePawn)
+            if(source.Content == CheckerTypes.WhitePawn)
             {
                 if (source.ColumnIndex - 1 == destination.ColumnIndex && source.RowIndex - 1 == destination.RowIndex)
                     return true;
                 else if (source.ColumnIndex + 1 == destination.ColumnIndex && source.RowIndex - 1 == destination.RowIndex)
                     return true;
+                else return false;
+            }
+
+            if (source.Content == CheckerTypes.BlackPawn)
+            {
+                if (source.ColumnIndex - 1 == destination.ColumnIndex && source.RowIndex + 1 == destination.RowIndex)
+                    return true;
+                else if (source.ColumnIndex + 1 == destination.ColumnIndex && source.RowIndex + 1 == destination.RowIndex)
+                    return true;
+                else return false;
             }
 
             return true;
