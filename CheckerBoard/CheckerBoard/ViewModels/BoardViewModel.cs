@@ -93,7 +93,7 @@ namespace Checkers.ViewModels
                 destination.Content = destination.Content == CheckerTypes.BlackPawn ? CheckerTypes.BlackKing : CheckerTypes.WhiteKing;
             }
 
-            // Schimbăm jucătorul curent
+            // Change currentPlayer
             CurrentPlayer = CurrentPlayer == Player.Black ? Player.White : Player.Black;
 
             // Actualizăm numărul de piese pentru fiecare jucător
@@ -104,9 +104,11 @@ namespace Checkers.ViewModels
 
         public bool IsMoveValidPawn(Cell source, Cell destination)
         {
+            if(source.RowIndex==destination.RowIndex && source.ColumnIndex==destination.ColumnIndex) { return false; }
+
             if (source.Content == CheckerTypes.BlackKing || source.Content == CheckerTypes.WhiteKing)
                 return false;
-            // Verificăm dacă destinatia este o casuta goala
+
             if (destination.IsOccupied)
                 return false;
 
@@ -134,6 +136,8 @@ namespace Checkers.ViewModels
 
         public bool isMoveValidKing(Cell source, Cell destination)
         {
+            if (source.RowIndex == destination.RowIndex && source.ColumnIndex == destination.ColumnIndex) { return false; }
+
             if (source.Content == CheckerTypes.BlackPawn || source.Content == CheckerTypes.WhitePawn)
                 return false;
 
