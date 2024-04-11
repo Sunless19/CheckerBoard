@@ -136,11 +136,11 @@ namespace Checkers.ViewModels
         {
             if (source.Content == CheckerTypes.BlackPawn || source.Content == CheckerTypes.WhitePawn)
                 return false;
-            // Verificăm dacă destinatia este o casuta goala
+
             if (destination.IsOccupied)
                 return false;
 
-            // Verificăm dacă mutarea este pe diagonală
+            // mutare pe diagonala-> fata-spate .
             if (source.Content == CheckerTypes.WhiteKing)
             {
                 if (source.ColumnIndex - 1 == destination.ColumnIndex && source.RowIndex - 1 == destination.RowIndex)
@@ -150,10 +150,6 @@ namespace Checkers.ViewModels
                 else if (source.ColumnIndex - 1 == destination.ColumnIndex && source.RowIndex + 1 == destination.RowIndex)
                     return true;
                 else if (source.ColumnIndex + 1 == destination.ColumnIndex && source.RowIndex + 1 == destination.RowIndex)
-                    return true;
-                else if (source.ColumnIndex == destination.ColumnIndex && source.RowIndex - 1 == destination.RowIndex)
-                    return true;
-                else if (source.ColumnIndex == destination.ColumnIndex && source.RowIndex + 1 == destination.RowIndex)
                     return true;
                 else return false;
             }
@@ -167,10 +163,6 @@ namespace Checkers.ViewModels
                 else if (source.ColumnIndex - 1 == destination.ColumnIndex && source.RowIndex + 1 == destination.RowIndex)
                     return true;
                 else if (source.ColumnIndex + 1 == destination.ColumnIndex && source.RowIndex + 1 == destination.RowIndex)
-                    return true;
-                else if (source.ColumnIndex == destination.ColumnIndex && source.RowIndex - 1 == destination.RowIndex)
-                    return true;
-                else if (source.ColumnIndex == destination.ColumnIndex && source.RowIndex + 1 == destination.RowIndex)
                     return true;
                 else return false;
             }

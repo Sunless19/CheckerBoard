@@ -69,5 +69,6 @@ namespace CheckerBoard.Models
             RowIndex = rowIndex;
             ColumnIndex = columnIndex;
         }
+        
     }
 }
