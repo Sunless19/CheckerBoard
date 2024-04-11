@@ -48,6 +48,8 @@ namespace CheckerBoard
                         boardViewModel.MakeMove(sourceCell, destinationCell);
                         sourceCell.IsSelected = false;
                         sourceCell.IsOccupied = false;
+                        destinationCell.IsOccupied = true;
+
                     }
                     sourceCell.IsSelected = false;
                 }

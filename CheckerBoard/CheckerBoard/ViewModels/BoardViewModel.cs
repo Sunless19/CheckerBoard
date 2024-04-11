@@ -73,7 +73,7 @@ namespace Checkers.ViewModels
                 return;
 
             //Verificăm dacă sursa este ocupată de o piesă și dacă este piesa jucătorului curent
-            if (!source.IsOccupied || source.Content == CheckerTypes.None || source.Content == CheckerTypes.None ||
+            if (!source.IsOccupied || source.Content == CheckerTypes.None ||
                 (CurrentPlayer == Player.Black && (source.Content == CheckerTypes.WhitePawn || source.Content == CheckerTypes.WhiteKing)) ||
                 (CurrentPlayer == Player.White && (source.Content == CheckerTypes.BlackPawn || source.Content == CheckerTypes.BlackKing)))
                 return;
@@ -112,10 +112,15 @@ namespace Checkers.ViewModels
             int colDifference = destination.ColumnIndex - source.ColumnIndex;
 
             // Verificăm dacă mutarea este pe diagonală
-            if (Math.Abs(rowDifference) != 1 || Math.Abs(colDifference) != 1)
-                return false;
+            //AICI TREBUIE SA PUN CULOAREA LA FIECARE PIESA
+            if(source.Content==CheckerTypes.WhitePawn)
+            {
+                if (source.ColumnIndex - 1 == destination.ColumnIndex && source.RowIndex - 1 == destination.RowIndex)
+                    return true;
+                else if (source.ColumnIndex + 1 == destination.ColumnIndex && source.RowIndex - 1 == destination.RowIndex)
+                    return true;
+            }
 
-            
             return true;
         }
     }
