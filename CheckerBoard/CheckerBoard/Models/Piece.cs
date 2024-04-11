@@ -1,4 +1,6 @@
-﻿namespace Checkers.ViewModels
+﻿using Checkers.ViewModels;
+
+namespace CheckerBoard.Models
 {
     public class Cell : BaseViewModel
     {

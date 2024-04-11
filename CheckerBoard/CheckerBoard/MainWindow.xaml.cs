@@ -1,4 +1,5 @@
-﻿using Checkers.ViewModels;
+﻿using CheckerBoard.Models;
+using Checkers.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -49,7 +50,13 @@ namespace CheckerBoard
                         sourceCell.IsSelected = false;
                         sourceCell.IsOccupied = false;
                         destinationCell.IsOccupied = true;
-
+                    }
+                    else if (boardViewModel.isMoveValidKing(sourceCell,destinationCell))
+                    {
+                        boardViewModel.MakeMove(sourceCell, destinationCell);
+                        sourceCell.IsSelected = false;
+                        sourceCell.IsOccupied = false;
+                        destinationCell.IsOccupied = true;
                     }
                     sourceCell.IsSelected = false;
                 }

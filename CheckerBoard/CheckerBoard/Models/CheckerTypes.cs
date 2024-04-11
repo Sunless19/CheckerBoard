@@ -1,4 +1,4 @@
-﻿namespace Checkers.ViewModels
+﻿namespace CheckerBoard.Models
 {
     public enum CheckerTypes
     {

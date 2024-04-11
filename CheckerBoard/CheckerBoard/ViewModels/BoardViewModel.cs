@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
+using CheckerBoard.Models;
 
 namespace Checkers.ViewModels
 {
@@ -43,7 +44,7 @@ namespace Checkers.ViewModels
         public BoardViewModel()
         {
             Cells = new ObservableCollection<Cell>();
-            CurrentPlayer = Player.White; 
+            CurrentPlayer = Player.White;
 
             for (int i = 0; i < 8; i++)
             {
@@ -78,7 +79,7 @@ namespace Checkers.ViewModels
                 (CurrentPlayer == Player.White && (source.Content == CheckerTypes.BlackPawn || source.Content == CheckerTypes.BlackKing)))
                 return;
 
-            if (destination.IsOccupied || !IsMoveValidPawn(source, destination))
+            if (destination.IsOccupied)
                 return;
 
             // Efectuăm mutarea
@@ -103,16 +104,14 @@ namespace Checkers.ViewModels
 
         public bool IsMoveValidPawn(Cell source, Cell destination)
         {
+            if (source.Content == CheckerTypes.BlackKing || source.Content == CheckerTypes.WhiteKing)
+                return false;
             // Verificăm dacă destinatia este o casuta goala
             if (destination.IsOccupied)
                 return false;
 
-            // Determinăm diferența de rând și de coloană între sursă și destinație
-            int rowDifference = destination.RowIndex - source.RowIndex;
-            int colDifference = destination.ColumnIndex - source.ColumnIndex;
-
             // Verificăm dacă mutarea este pe diagonală
-            if(source.Content == CheckerTypes.WhitePawn)
+            if (source.Content == CheckerTypes.WhitePawn)
             {
                 if (source.ColumnIndex - 1 == destination.ColumnIndex && source.RowIndex - 1 == destination.RowIndex)
                     return true;
@@ -132,11 +131,53 @@ namespace Checkers.ViewModels
 
             return true;
         }
+
+        public bool isMoveValidKing(Cell source, Cell destination)
+        {
+            if (source.Content == CheckerTypes.BlackPawn || source.Content == CheckerTypes.WhitePawn)
+                return false;
+            // Verificăm dacă destinatia este o casuta goala
+            if (destination.IsOccupied)
+                return false;
+
+            // Verificăm dacă mutarea este pe diagonală
+            if (source.Content == CheckerTypes.WhiteKing)
+            {
+                if (source.ColumnIndex - 1 == destination.ColumnIndex && source.RowIndex - 1 == destination.RowIndex)
+                    return true;
+                else if (source.ColumnIndex + 1 == destination.ColumnIndex && source.RowIndex - 1 == destination.RowIndex)
+                    return true;
+                else if (source.ColumnIndex - 1 == destination.ColumnIndex && source.RowIndex + 1 == destination.RowIndex)
+                    return true;
+                else if (source.ColumnIndex + 1 == destination.ColumnIndex && source.RowIndex + 1 == destination.RowIndex)
+                    return true;
+                else if (source.ColumnIndex == destination.ColumnIndex && source.RowIndex - 1 == destination.RowIndex)
+                    return true;
+                else if (source.ColumnIndex == destination.ColumnIndex && source.RowIndex + 1 == destination.RowIndex)
+                    return true;
+                else return false;
+            }
+
+            if (source.Content == CheckerTypes.BlackKing)
+            {
+                if (source.ColumnIndex - 1 == destination.ColumnIndex && source.RowIndex - 1 == destination.RowIndex)
+                    return true;
+                else if (source.ColumnIndex + 1 == destination.ColumnIndex && source.RowIndex - 1 == destination.RowIndex)
+                    return true;
+                else if (source.ColumnIndex - 1 == destination.ColumnIndex && source.RowIndex + 1 == destination.RowIndex)
+                    return true;
+                else if (source.ColumnIndex + 1 == destination.ColumnIndex && source.RowIndex + 1 == destination.RowIndex)
+                    return true;
+                else if (source.ColumnIndex == destination.ColumnIndex && source.RowIndex - 1 == destination.RowIndex)
+                    return true;
+                else if (source.ColumnIndex == destination.ColumnIndex && source.RowIndex + 1 == destination.RowIndex)
+                    return true;
+                else return false;
+            }
+
+            return true;
+        }
     }
 
-    public enum Player
-    {
-        Black,
-        White
-    }
+
 }
