@@ -2,7 +2,7 @@
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace Checkers.Converters
+namespace CheckerBoard.Converters
 {
     class BoolToBrushValueConverter : IValueConverter
     {

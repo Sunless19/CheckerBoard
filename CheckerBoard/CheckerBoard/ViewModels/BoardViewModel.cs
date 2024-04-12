@@ -1,9 +1,10 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using Checkers.Services;
-using Checkers.Models;
+using CheckerBoard;
+using CheckerBoard.Services;
+using CheckerBoard.Models;
 
-namespace Checkers.ViewModels
+namespace CheckerBoard.ViewModels
 {
     public class BoardViewModel : BaseViewModel
     {
@@ -21,6 +22,8 @@ namespace Checkers.ViewModels
         public ICommand LoadGameCommand { get; set; }
 
         public ICommand NewGameCommand { get; set; }
+
+        public ICommand MultipleJumpCommand { get; set; }
 
         public ICommand DisplayInfoCommand { get; set; }
 
@@ -49,34 +52,75 @@ namespace Checkers.ViewModels
 
             if (result == MessageBoxResult.Yes)
             {
-               GameModel = new GameModel();
+               GameModel = new GameModel(true);
                GameModel.HasMultipleJumps = true;
             }
             else if (result == MessageBoxResult.No)
             {
-                GameModel  = new GameModel();
+                GameModel  = new GameModel(true);
                 GameModel.HasMultipleJumps = false;
             }
         }
 
 
 
-        //public void SaveGame(object parameter)
-        //{
-        //    _jsonService.SaveObjectToFile(BoardViewModel);
-        //}
+        public void SaveGame(object parameter)
+        {
+            _jsonService.SaveObjectToFile(GameModel);
+        }
+        public void LoadGame(object parameter)
+        {
+            var loadedGameModel = _jsonService.LoadObjectFromFile<GameModel>();
+            if (loadedGameModel != null)
+            {
+                GameModel.Cells.Clear(); // Elimină celulele existente pentru a evita dublarea acestora
+                foreach (var cell in loadedGameModel.Cells)
+                {
+                    GameModel.Cells.Add(cell); // Adaugă celulele încărcate în modelul actual
+                    
+                }
+                
+                GameModel.CurrentPlayer = loadedGameModel.CurrentPlayer;
+                GameModel.IsGameNotInProgress = loadedGameModel.IsGameNotInProgress;
+                GameModel.SelectedCell = loadedGameModel.SelectedCell;
+                GameModel.Winner = loadedGameModel.Winner;
+                GameModel.HasMultipleJumps = loadedGameModel.HasMultipleJumps;
+                
+            }
+        }
 
         public BoardViewModel()
         {
-            GameModel = new GameModel();
+            GameModel = new GameModel(true);
+            _jsonService = new FilesService();
 
             NewGameCommand = new RelayCommand(NewGame);
-            //SaveGameCommand=new RelayCommand(SaveGame);\
-
-            
+            SaveGameCommand = new RelayCommand(SaveGame);
+            LoadGameCommand = new RelayCommand(LoadGame);
+            MultipleJumpCommand = new RelayCommand(MultipleJump);
+            DisplayInfoCommand = new RelayCommand(DisplayInfo);
         }
 
-        
+        private void DisplayInfo(object obj)
+        {
+            About aboutWindow = new About();
+            aboutWindow.Show();
+        }
+
+        private void MultipleJump(object obj)
+        {
+            if (GameModel.HasMultipleJumps)
+            {
+                GameModel.HasMultipleJumps = false;
+                return;
+            }
+            
+            if (!GameModel.HasMultipleJumps)
+            {
+                GameModel.HasMultipleJumps = true;
+                return;
+            }
+        }
     }
 
 

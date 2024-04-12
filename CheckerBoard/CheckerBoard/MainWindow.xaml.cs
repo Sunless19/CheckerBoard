@@ -1,10 +1,8 @@
 ﻿using CheckerBoard.Models;
-using Checkers.ViewModels;
 using System.DirectoryServices.ActiveDirectory;
 using System.Windows;
 using System.Windows.Controls;
-using Checkers.Models;
-
+using CheckerBoard.ViewModels;
 
 namespace CheckerBoard
 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Win32;
 using System.IO;
 
-namespace Checkers.Services
+namespace CheckerBoard.Services
 {
     public class FilesService
     {

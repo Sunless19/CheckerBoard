@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace Checkers.ViewModels
+namespace CheckerBoard.ViewModels
 {
     internal class RelayCommand : ICommand
     {
@@ -21,12 +21,12 @@ namespace Checkers.ViewModels
 
         public bool CanExecute(object parameter)
         {
-            return this.canExecute == null || this.canExecute(parameter);
+            return canExecute == null || canExecute(parameter);
         }
 
         public void Execute(object parameter)
         {
-            this.execute(parameter);
+            execute(parameter);
         }
     }
 }

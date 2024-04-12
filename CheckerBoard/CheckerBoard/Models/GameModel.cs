@@ -1,9 +1,9 @@
-﻿using CheckerBoard.Models;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
-using Checkers.ViewModels;
+using CheckerBoard.Models;
+using CheckerBoard.ViewModels;
 
-namespace Checkers.Models
+namespace CheckerBoard.Models
 {
     public class GameModel : BaseViewModel
     {
@@ -16,7 +16,7 @@ namespace Checkers.Models
         private Player _winner;
 
 
-        
+
         public ObservableCollection<Cell> Cells { get; set; }
         public Player Winner
         {
@@ -60,8 +60,11 @@ namespace Checkers.Models
             get { return _hasMultipleJumps; }
             set
             {
-                _hasMultipleJumps = value;
-                OnPropertyChanged(nameof(_hasMultipleJumps));
+                if (_hasMultipleJumps != value)
+                {
+                    _hasMultipleJumps = value;
+                    OnPropertyChanged(nameof(HasMultipleJumps));
+                }
             }
         }
 
@@ -75,9 +78,13 @@ namespace Checkers.Models
             }
         }
         public int BlackPieceCount => Cells.Count(cell => cell.Content == CheckerTypes.BlackPawn || cell.Content == CheckerTypes.BlackKing);
-        public int WhitePieceCount => Cells.Count(cell => cell.Content == CheckerTypes.WhitePawn || cell.Content == CheckerTypes.WhiteKing);
 
-        public GameModel()
+        public int WhitePieceCount => Cells.Count(cell => cell.Content == CheckerTypes.WhitePawn || cell.Content == CheckerTypes.WhiteKing);
+        public GameModel() {
+            OnPropertyChanged(nameof(BlackPieceCount));
+            OnPropertyChanged(nameof(WhitePieceCount));
+        }
+        public GameModel(bool ok)
         {
             Cells = new ObservableCollection<Cell>();
             CurrentPlayer = Player.White;
@@ -101,8 +108,12 @@ namespace Checkers.Models
                     }
                 }
             }
+            OnPropertyChanged(nameof(BlackPieceCount));
+            OnPropertyChanged(nameof(WhitePieceCount));
         }
-        
+
+
+
 
         public void MakeMove(Cell source, Cell destination)
         {
@@ -113,8 +124,8 @@ namespace Checkers.Models
 
             //Verificăm dacă sursa este ocupată de o piesă și dacă este piesa jucătorului curent
             if (!source.IsOccupied || source.Content == CheckerTypes.None ||
-                (CurrentPlayer == Player.Black && (source.Content == CheckerTypes.WhitePawn || source.Content == CheckerTypes.WhiteKing)) ||
-                (CurrentPlayer == Player.White && (source.Content == CheckerTypes.BlackPawn || source.Content == CheckerTypes.BlackKing)))
+                CurrentPlayer == Player.Black && (source.Content == CheckerTypes.WhitePawn || source.Content == CheckerTypes.WhiteKing) ||
+                CurrentPlayer == Player.White && (source.Content == CheckerTypes.BlackPawn || source.Content == CheckerTypes.BlackKing))
                 return;
 
             if (destination.IsOccupied)
@@ -125,8 +136,8 @@ namespace Checkers.Models
             source.Content = CheckerTypes.None;
 
             // Verificăm dacă piesa a ajuns la capătul tablei și o transformăm în regină
-            if ((destination.Content == CheckerTypes.WhitePawn && destination.RowIndex == 0) ||
-                (destination.Content == CheckerTypes.BlackPawn && destination.RowIndex == 7))
+            if (destination.Content == CheckerTypes.WhitePawn && destination.RowIndex == 0 ||
+                destination.Content == CheckerTypes.BlackPawn && destination.RowIndex == 7)
             {
                 destination.Content = destination.Content == CheckerTypes.BlackPawn ? CheckerTypes.BlackKing : CheckerTypes.WhiteKing;
             }

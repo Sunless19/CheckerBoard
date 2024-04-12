@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Checkers.ViewModels
+namespace CheckerBoard.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged
     {

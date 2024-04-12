@@ -3,13 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CheckerBoard"
-        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-        xmlns:vm="clr-namespace:Checkers.ViewModels"
-        xmlns:conv="clr-namespace:Checkers.Converters"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="750" Width="1200">
-
+        xmlns:vm="clr-namespace:CheckerBoard.ViewModels"
+        xmlns:conv="clr-namespace:CheckerBoard.Converters"
+        mc:Ignorable="d" 
+        Title="MainWindow" Height="750" Width="1200">  
+ 
     <Window.DataContext>
         <vm:BoardViewModel/>
     </Window.DataContext>
@@ -36,13 +34,13 @@
         <Menu Grid.Row="0" Background="White">
             <MenuItem Header="_File">
                 <MenuItem Header="_New Game" Command="{Binding NewGameCommand}"/>
-                <MenuItem Header="_Save"/>
-                <MenuItem Header="_Open"/>
-                <MenuItem Header="_Allow Multiple Jumps"/>
+                <MenuItem Header="_Save" Command="{Binding SaveGameCommand}"/>
+                <MenuItem Header="_Open" Command="{Binding LoadGameCommand}"/>
+                <MenuItem Header="_Allow Multiple Jumps" Command="{Binding MultipleJumpCommand}"/>
                 <MenuItem Header="_Statistics"/>
             </MenuItem>
             <MenuItem Header="_Help">
-                <MenuItem Header="_About"/>
+                <MenuItem Header="_About" Command="{Binding DisplayInfoCommand}"/>
             </MenuItem>
         </Menu>
 

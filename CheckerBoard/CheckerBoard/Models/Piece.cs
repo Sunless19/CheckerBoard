@@ -1,4 +1,4 @@
-﻿using Checkers.ViewModels;
+﻿using CheckerBoard.ViewModels;
 
 namespace CheckerBoard.Models
 {

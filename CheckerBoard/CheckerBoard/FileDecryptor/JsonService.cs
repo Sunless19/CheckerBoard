@@ -1,4 +1,4 @@
-﻿namespace Checkers.Services
+﻿namespace CheckerBoard.Services
 {
     public static class JsonService
     {
