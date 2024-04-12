@@ -8,6 +8,7 @@ namespace CheckerBoard
 {
     public partial class MainWindow : Window
     {
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -17,11 +18,12 @@ namespace CheckerBoard
         {
             var button = sender as Button;
             var cell = button?.DataContext as Cell;
-
+            
             if (cell == null)
                 return;
 
             var boardViewModel = DataContext as BoardViewModel;
+            boardViewModel.IsGameNotInProgress = false;
 
             if (cell.IsOccupied && boardViewModel != null)
             {
@@ -50,23 +52,47 @@ namespace CheckerBoard
                         boardViewModel.MakeMove(sourceCell, destinationCell);
                         sourceCell.IsSelected = false;
                         sourceCell.IsOccupied = false;
-                        destinationCell.IsOccupied = true;
+                        boardViewModel.notMovable = false;
+                        if (destinationCell.Content == CheckerTypes.None)
+                        {
+                            destinationCell.IsOccupied = false;
+                        }
+                        else destinationCell.IsOccupied = true;
+
                     }
                     else if (boardViewModel.isMoveValidKing(sourceCell, destinationCell))
                     {
                         boardViewModel.MakeMove(sourceCell, destinationCell);
                         sourceCell.IsSelected = false;
                         sourceCell.IsOccupied = false;
-                        destinationCell.IsOccupied = true;
+                        boardViewModel.notMovable = false;
+                        if (destinationCell.Content == CheckerTypes.None)
+                        {
+                            destinationCell.IsOccupied = false;
+                        }
+                        else destinationCell.IsOccupied = true;
                     }
                     //Trebuie sa se vada daca randul este al jucatorului pentru ca daca e rand albului si negru vrea sa ia atunci o sa ia dar nu se muta .
                     else if (existsPieceBetween(sourceCell, destinationCell, boardViewModel))
                     {
                         boardViewModel.MakeMove(sourceCell, destinationCell);
+                        if (boardViewModel.HasMultipleJumps == true)
+                        {
+                            boardViewModel.CurrentPlayer = boardViewModel.CurrentPlayer == Player.Black ? Player.White : Player.Black;
+                            destinationCell.IsSelected = true;
+                            boardViewModel.SelectedCell = destinationCell;
+                            boardViewModel.notMovable = true;
+                        }
                         sourceCell.IsSelected = false;
-                        sourceCell.IsOccupied = false;
-                        destinationCell.IsOccupied = true;
+                        sourceCell.IsOccupied = false; 
+
+                        if (destinationCell.Content == CheckerTypes.None)
+                        {
+                            destinationCell.IsOccupied = false;
+                        }
+                        else destinationCell.IsOccupied = true;
                     }
+                    //else if currentPlayer == White/Black si numaru de piese al White/Black atunci sa se afiseze Draw .
                     sourceCell.IsSelected = false;
                 }
             }
@@ -74,9 +100,10 @@ namespace CheckerBoard
 
         private bool existsPieceBetween(Cell sourceCell, Cell destinationCell, BoardViewModel boardViewModel)
         {
-            int betweenRowIndex = (sourceCell.RowIndex + destinationCell.RowIndex) / 2;
-            int betweenColumnIndex = (sourceCell.ColumnIndex + destinationCell.ColumnIndex) / 2;
-            //big ass logic.
+            if (destinationCell.RowIndex % 2 == destinationCell.ColumnIndex % 2) { return false;}
+            float betweenRowIndex = (sourceCell.RowIndex + destinationCell.RowIndex) / 2;
+            float betweenColumnIndex = (sourceCell.ColumnIndex + destinationCell.ColumnIndex) / 2;
+
             if (sourceCell.Content == CheckerTypes.WhiteKing || sourceCell.Content == CheckerTypes.BlackKing || (sourceCell.Content == CheckerTypes.BlackPawn && destinationCell.RowIndex > sourceCell.RowIndex) || (sourceCell.Content == CheckerTypes.WhitePawn && destinationCell.RowIndex < sourceCell.RowIndex))
                 if (!destinationCell.IsOccupied)
                 {

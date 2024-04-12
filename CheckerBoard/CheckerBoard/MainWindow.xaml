@@ -45,6 +45,8 @@
                 <MenuItem Header="_About"/>
             </MenuItem>
         </Menu>
+        
+        <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding HasMultipleJumps}" Content="Allow Multiple Jumps" Grid.ColumnSpan="2" Margin="227,49,97,440" Grid.RowSpan="2" IsEnabled="{Binding IsGameNotInProgress}"/>
 
         <ItemsControl
             ItemsSource="{Binding Cells}" 

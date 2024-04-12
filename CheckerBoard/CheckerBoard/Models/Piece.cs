@@ -10,6 +10,7 @@ namespace CheckerBoard.Models
         private bool _isSelected;
         public int RowIndex { get; set; }
         public int ColumnIndex { get; set; }
+        
 
         public bool IsBlack
         {

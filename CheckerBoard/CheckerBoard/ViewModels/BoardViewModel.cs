@@ -9,6 +9,29 @@ namespace Checkers.ViewModels
         private ObservableCollection<Cell> _cells;
         private Player _currentPlayer;
         private Cell _selectedCell;
+        private bool _hasMultipleJumps;
+        private bool _IsGameNotInProgress = true;
+        private bool _isMultipleCaptureInProgress = false;
+        public bool notMovable = false;
+        public bool IsMultipleCaptureInProgress
+        {
+            get { return _isMultipleCaptureInProgress; }
+            set
+            {
+                _isMultipleCaptureInProgress = value;
+                OnPropertyChanged(nameof(IsMultipleCaptureInProgress));
+            }
+        }
+
+        public bool IsGameNotInProgress
+        {
+            get { return _IsGameNotInProgress; }
+            set
+            {
+                _IsGameNotInProgress = value;
+                OnPropertyChanged(nameof(IsGameNotInProgress));
+            }
+        }
         public Cell SelectedCell
         {
             get { return _selectedCell; }
@@ -16,6 +39,15 @@ namespace Checkers.ViewModels
             {
                 _selectedCell = value;
                 OnPropertyChanged(nameof(SelectedCell));
+            }
+        }
+        public bool HasMultipleJumps
+        {
+            get { return _hasMultipleJumps; }
+            set
+            {
+                _hasMultipleJumps = value;
+                OnPropertyChanged(nameof(_hasMultipleJumps));
             }
         }
         public ObservableCollection<Cell> Cells
@@ -69,6 +101,7 @@ namespace Checkers.ViewModels
 
         public void MakeMove(Cell source, Cell destination)
         {
+            if(destination.IsOccupied && notMovable) { CurrentPlayer = CurrentPlayer == Player.Black ? Player.White : Player.Black; return; }
             // Verificăm dacă sursa și destinația sunt valide
             if (source == null || destination == null)
                 return;
@@ -93,18 +126,24 @@ namespace Checkers.ViewModels
                 destination.Content = destination.Content == CheckerTypes.BlackPawn ? CheckerTypes.BlackKing : CheckerTypes.WhiteKing;
             }
 
-            // Change currentPlayer
-            CurrentPlayer = CurrentPlayer == Player.Black ? Player.White : Player.Black;
+            // Change currentPlayer if hasMultipleJumps is activated or not .
+             CurrentPlayer = CurrentPlayer == Player.Black ? Player.White : Player.Black;
+
+
 
             // Actualizăm numărul de piese pentru fiecare jucător
             OnPropertyChanged(nameof(BlackPieceCount));
             OnPropertyChanged(nameof(WhitePieceCount));
 
+            if (BlackPieceCount == 0 || WhitePieceCount == 0)
+            {
+                IsGameNotInProgress = false;
+            }
         }
 
         public bool IsMoveValidPawn(Cell source, Cell destination)
         {
-            if(source.RowIndex==destination.RowIndex && source.ColumnIndex==destination.ColumnIndex) { return false; }
+            if (source.RowIndex == destination.RowIndex && source.ColumnIndex == destination.ColumnIndex) { return false; }
 
             if (source.Content == CheckerTypes.BlackKing || source.Content == CheckerTypes.WhiteKing)
                 return false;
