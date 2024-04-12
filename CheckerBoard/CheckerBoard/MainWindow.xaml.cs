@@ -3,6 +3,8 @@ using Checkers.ViewModels;
 using System.DirectoryServices.ActiveDirectory;
 using System.Windows;
 using System.Windows.Controls;
+using Checkers.Models;
+
 
 namespace CheckerBoard
 {
@@ -23,17 +25,20 @@ namespace CheckerBoard
                 return;
 
             var boardViewModel = DataContext as BoardViewModel;
-            boardViewModel.IsGameNotInProgress = false;
+            var gameModel = boardViewModel.GameModel;
+                
+            
+            gameModel.IsGameNotInProgress = false;
 
-            if (cell.IsOccupied && boardViewModel != null)
+            if (cell.IsOccupied && gameModel != null)
             {
-                if (boardViewModel.SelectedCell != cell)
+                if (gameModel.SelectedCell != cell)
                 {
-                    if (boardViewModel.SelectedCell != null)
-                        boardViewModel.SelectedCell.IsSelected = false;
+                    if (gameModel.SelectedCell != null)
+                        gameModel.SelectedCell.IsSelected = false;
 
                     cell.IsSelected = true;
-                    boardViewModel.SelectedCell = cell;
+                    gameModel.SelectedCell = cell;
                 }
                 else
                 {
@@ -42,17 +47,17 @@ namespace CheckerBoard
             }
             else
             {
-                if (boardViewModel != null && boardViewModel.SelectedCell != null)
+                if (gameModel != null && gameModel.SelectedCell != null)
                 {
-                    var sourceCell = boardViewModel.SelectedCell;
+                    var sourceCell = gameModel.SelectedCell;
                     var destinationCell = cell;
 
-                    if (boardViewModel.IsMoveValidPawn(sourceCell, destinationCell))
+                    if (gameModel.IsMoveValidPawn(sourceCell, destinationCell))
                     {
-                        boardViewModel.MakeMove(sourceCell, destinationCell);
+                        gameModel.MakeMove(sourceCell, destinationCell);
                         sourceCell.IsSelected = false;
                         sourceCell.IsOccupied = false;
-                        boardViewModel.notMovable = false;
+                        gameModel.notMovable = false;
                         if (destinationCell.Content == CheckerTypes.None)
                         {
                             destinationCell.IsOccupied = false;
@@ -60,12 +65,12 @@ namespace CheckerBoard
                         else destinationCell.IsOccupied = true;
 
                     }
-                    else if (boardViewModel.isMoveValidKing(sourceCell, destinationCell))
+                    else if (gameModel.isMoveValidKing(sourceCell, destinationCell))
                     {
-                        boardViewModel.MakeMove(sourceCell, destinationCell);
+                        gameModel.MakeMove(sourceCell, destinationCell);
                         sourceCell.IsSelected = false;
                         sourceCell.IsOccupied = false;
-                        boardViewModel.notMovable = false;
+                        gameModel.notMovable = false;
                         if (destinationCell.Content == CheckerTypes.None)
                         {
                             destinationCell.IsOccupied = false;
@@ -73,15 +78,15 @@ namespace CheckerBoard
                         else destinationCell.IsOccupied = true;
                     }
                     //Trebuie sa se vada daca randul este al jucatorului pentru ca daca e rand albului si negru vrea sa ia atunci o sa ia dar nu se muta .
-                    else if (existsPieceBetween(sourceCell, destinationCell, boardViewModel))
+                    else if (existsPieceBetween(sourceCell, destinationCell, gameModel))
                     {
-                        boardViewModel.MakeMove(sourceCell, destinationCell);
-                        if (boardViewModel.HasMultipleJumps == true)
+                        gameModel.MakeMove(sourceCell, destinationCell);
+                        if (gameModel.HasMultipleJumps == true)
                         {
-                            boardViewModel.CurrentPlayer = boardViewModel.CurrentPlayer == Player.Black ? Player.White : Player.Black;
+                            gameModel.CurrentPlayer = gameModel.CurrentPlayer == Player.Black ? Player.White : Player.Black;
                             destinationCell.IsSelected = true;
-                            boardViewModel.SelectedCell = destinationCell;
-                            boardViewModel.notMovable = true;
+                            gameModel.SelectedCell = destinationCell;
+                            gameModel.notMovable = true;
                         }
                         sourceCell.IsSelected = false;
                         sourceCell.IsOccupied = false; 
@@ -98,7 +103,7 @@ namespace CheckerBoard
             }
         }
 
-        private bool existsPieceBetween(Cell sourceCell, Cell destinationCell, BoardViewModel boardViewModel)
+        private bool existsPieceBetween(Cell sourceCell, Cell destinationCell, GameModel gameModel)
         {
             if (destinationCell.RowIndex % 2 == destinationCell.ColumnIndex % 2) { return false;}
             float betweenRowIndex = (sourceCell.RowIndex + destinationCell.RowIndex) / 2;
@@ -107,21 +112,21 @@ namespace CheckerBoard
             if (sourceCell.Content == CheckerTypes.WhiteKing || sourceCell.Content == CheckerTypes.BlackKing || (sourceCell.Content == CheckerTypes.BlackPawn && destinationCell.RowIndex > sourceCell.RowIndex) || (sourceCell.Content == CheckerTypes.WhitePawn && destinationCell.RowIndex < sourceCell.RowIndex))
                 if (!destinationCell.IsOccupied)
                 {
-                    foreach (var cell in boardViewModel.Cells)
+                    foreach (var cell in gameModel.Cells)
                     {
                         if (cell.RowIndex == betweenRowIndex && cell.ColumnIndex == betweenColumnIndex)
                         {
                             if (cell.IsOccupied && ((cell.Content == CheckerTypes.BlackPawn && sourceCell.Content != cell.Content) || (cell.Content == CheckerTypes.WhitePawn && sourceCell.Content != cell.Content)))
                             {
-                                if ((sourceCell.Content == CheckerTypes.WhitePawn && boardViewModel.CurrentPlayer == Player.White) ||
-                               (sourceCell.Content == CheckerTypes.BlackPawn && boardViewModel.CurrentPlayer == Player.Black))
+                                if ((sourceCell.Content == CheckerTypes.WhitePawn && gameModel.CurrentPlayer == Player.White) ||
+                               (sourceCell.Content == CheckerTypes.BlackPawn && gameModel.CurrentPlayer == Player.Black))
                                 {
                                     cell.IsOccupied = false;
                                     cell.Content = CheckerTypes.None;
                                     return true;
                                 }
-                                else if ((sourceCell.Content == CheckerTypes.WhiteKing && boardViewModel.CurrentPlayer == Player.White) ||
-                               (sourceCell.Content == CheckerTypes.BlackKing && boardViewModel.CurrentPlayer == Player.Black))
+                                else if ((sourceCell.Content == CheckerTypes.WhiteKing && gameModel.CurrentPlayer == Player.White) ||
+                               (sourceCell.Content == CheckerTypes.BlackKing && gameModel.CurrentPlayer == Player.Black))
                                 {
                                     cell.IsOccupied = false;
                                     cell.Content = CheckerTypes.None;
@@ -130,15 +135,15 @@ namespace CheckerBoard
                             }
                             else if (cell.IsOccupied && ((cell.Content == CheckerTypes.BlackKing && sourceCell.Content != cell.Content) || (cell.Content == CheckerTypes.WhiteKing && sourceCell.Content != cell.Content)))
                             {
-                                if ((sourceCell.Content == CheckerTypes.WhiteKing && boardViewModel.CurrentPlayer == Player.White) ||
-                               (sourceCell.Content == CheckerTypes.BlackKing && boardViewModel.CurrentPlayer == Player.Black))
+                                if ((sourceCell.Content == CheckerTypes.WhiteKing && gameModel.CurrentPlayer == Player.White) ||
+                               (sourceCell.Content == CheckerTypes.BlackKing && gameModel.CurrentPlayer == Player.Black))
                                 {
                                     cell.IsOccupied = false;
                                     cell.Content = CheckerTypes.None;
                                     return true;
                                 }
-                                if ((sourceCell.Content == CheckerTypes.WhitePawn && boardViewModel.CurrentPlayer == Player.White) ||
-                               (sourceCell.Content == CheckerTypes.BlackPawn && boardViewModel.CurrentPlayer == Player.Black))
+                                if ((sourceCell.Content == CheckerTypes.WhitePawn && gameModel.CurrentPlayer == Player.White) ||
+                               (sourceCell.Content == CheckerTypes.BlackPawn && gameModel.CurrentPlayer == Player.Black))
                                 {
                                     cell.IsOccupied = false;
                                     cell.Content = CheckerTypes.None;

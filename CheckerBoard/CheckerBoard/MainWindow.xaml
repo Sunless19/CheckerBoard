@@ -35,7 +35,7 @@
 
         <Menu Grid.Row="0" Background="White">
             <MenuItem Header="_File">
-                <MenuItem Header="_New Game"/>
+                <MenuItem Header="_New Game" Command="{Binding NewGameCommand}"/>
                 <MenuItem Header="_Save"/>
                 <MenuItem Header="_Open"/>
                 <MenuItem Header="_Allow Multiple Jumps"/>
@@ -45,11 +45,11 @@
                 <MenuItem Header="_About"/>
             </MenuItem>
         </Menu>
-        
-        <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding HasMultipleJumps}" Content="Allow Multiple Jumps" Grid.ColumnSpan="2" Margin="227,49,97,440" Grid.RowSpan="2" IsEnabled="{Binding IsGameNotInProgress}"/>
+
+        <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding GameModel.HasMultipleJumps}" Content="Allow Multiple Jumps" Margin="227,49,185,55" IsEnabled="{Binding GameModel.IsGameNotInProgress}"/>
 
         <ItemsControl
-            ItemsSource="{Binding Cells}" 
+            ItemsSource="{Binding GameModel.Cells}" 
             Background="Gray"
             Grid.Row="1"
             Grid.Column="1"
@@ -72,6 +72,7 @@
                                             >
                                     <ContentControl>
                                         <ContentControl.Style>
+
                                             <Style TargetType="ContentControl">
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding Content}" Value="WhitePawn">
@@ -143,16 +144,18 @@
         </ItemsControl>
         <StackPanel  Grid.Row="2" Orientation="Vertical" HorizontalAlignment="Left" Grid.Column="1" Margin="227,2,0,-2">
             <TextBlock Text="Current Player: "/>
-            <TextBlock Text="{Binding CurrentPlayer}" FontWeight="Bold"/>
+            <TextBlock Text="{Binding GameModel.CurrentPlayer}" FontWeight="Bold"/>
         </StackPanel>
 
         <!-- Adăugăm numărul de piese pentru fiecare jucător -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="1" Margin="108,2,0,-2">
             <TextBlock Text="Black Pieces: "/>
-            <TextBlock Text="{Binding BlackPieceCount}" FontWeight="Bold"/>
+            <TextBlock Text="{Binding GameModel.BlackPieceCount}" FontWeight="Bold"/>
             <TextBlock Text="                                             White Pieces: "/>
-            <TextBlock Text="{Binding WhitePieceCount}" FontWeight="Bold"/>
+            <TextBlock Text="{Binding GameModel.WhitePieceCount}" FontWeight="Bold"/>
         </StackPanel>
+
+
     </Grid>
 
 </Window>

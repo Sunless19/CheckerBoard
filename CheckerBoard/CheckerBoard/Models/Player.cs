@@ -8,6 +8,7 @@ namespace CheckerBoard.Models
 {
     public enum Player
     {
+        None,
         Black,
         White
     }

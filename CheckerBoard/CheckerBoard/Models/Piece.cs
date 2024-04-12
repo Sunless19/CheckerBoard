@@ -10,8 +10,6 @@ namespace CheckerBoard.Models
         private bool _isSelected;
         public int RowIndex { get; set; }
         public int ColumnIndex { get; set; }
-        
-
         public bool IsBlack
         {
             get { return _isBlack; }
@@ -52,7 +50,7 @@ namespace CheckerBoard.Models
             }
         }
 
-
+        public Cell() { }
         public Cell(bool isBlack, CheckerTypes content = default, int rowIndex = 0, int columnIndex = 0)
         {
             IsBlack = isBlack;
@@ -72,4 +70,6 @@ namespace CheckerBoard.Models
         }
         
     }
+
 }
+
