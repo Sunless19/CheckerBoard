@@ -76,51 +76,53 @@ namespace CheckerBoard
         {
             int betweenRowIndex = (sourceCell.RowIndex + destinationCell.RowIndex) / 2;
             int betweenColumnIndex = (sourceCell.ColumnIndex + destinationCell.ColumnIndex) / 2;
-
-            if (!destinationCell.IsOccupied)
-            {
-                foreach (var cell in boardViewModel.Cells)
+            //big ass logic.
+            if (sourceCell.Content == CheckerTypes.WhiteKing || sourceCell.Content == CheckerTypes.BlackKing || (sourceCell.Content == CheckerTypes.BlackPawn && destinationCell.RowIndex > sourceCell.RowIndex) || (sourceCell.Content == CheckerTypes.WhitePawn && destinationCell.RowIndex < sourceCell.RowIndex))
+                if (!destinationCell.IsOccupied)
                 {
-                    if (cell.RowIndex == betweenRowIndex && cell.ColumnIndex == betweenColumnIndex)
+                    foreach (var cell in boardViewModel.Cells)
                     {
-                        if (cell.IsOccupied && ((cell.Content == CheckerTypes.BlackPawn && sourceCell.Content != cell.Content) || (cell.Content == CheckerTypes.WhitePawn && sourceCell.Content != cell.Content)))
+                        if (cell.RowIndex == betweenRowIndex && cell.ColumnIndex == betweenColumnIndex)
                         {
-                            if ((sourceCell.Content == CheckerTypes.WhitePawn && boardViewModel.CurrentPlayer == Player.White) ||
-                           (sourceCell.Content == CheckerTypes.BlackPawn && boardViewModel.CurrentPlayer == Player.Black))
+                            if (cell.IsOccupied && ((cell.Content == CheckerTypes.BlackPawn && sourceCell.Content != cell.Content) || (cell.Content == CheckerTypes.WhitePawn && sourceCell.Content != cell.Content)))
                             {
-                                cell.IsOccupied = false;
-                                cell.Content = CheckerTypes.None;
-                                return true;
+                                if ((sourceCell.Content == CheckerTypes.WhitePawn && boardViewModel.CurrentPlayer == Player.White) ||
+                               (sourceCell.Content == CheckerTypes.BlackPawn && boardViewModel.CurrentPlayer == Player.Black))
+                                {
+                                    cell.IsOccupied = false;
+                                    cell.Content = CheckerTypes.None;
+                                    return true;
+                                }
+                                else if ((sourceCell.Content == CheckerTypes.WhiteKing && boardViewModel.CurrentPlayer == Player.White) ||
+                               (sourceCell.Content == CheckerTypes.BlackKing && boardViewModel.CurrentPlayer == Player.Black))
+                                {
+                                    cell.IsOccupied = false;
+                                    cell.Content = CheckerTypes.None;
+                                    return true;
+                                }
                             }
-                            else if((sourceCell.Content == CheckerTypes.WhiteKing && boardViewModel.CurrentPlayer == Player.White) ||
-                           (sourceCell.Content == CheckerTypes.BlackKing && boardViewModel.CurrentPlayer == Player.Black))
+                            else if (cell.IsOccupied && ((cell.Content == CheckerTypes.BlackKing && sourceCell.Content != cell.Content) || (cell.Content == CheckerTypes.WhiteKing && sourceCell.Content != cell.Content)))
                             {
-                                cell.IsOccupied = false;
-                                cell.Content = CheckerTypes.None;
-                                return true;
-                            }
-                        }
-                        else if (cell.IsOccupied && ((cell.Content== CheckerTypes.BlackKing &&sourceCell.Content!=cell.Content) || (cell.Content==CheckerTypes.WhiteKing && sourceCell.Content!=cell.Content)))
-                        {
-                            if ((sourceCell.Content == CheckerTypes.WhiteKing && boardViewModel.CurrentPlayer == Player.White) ||
-                           (sourceCell.Content == CheckerTypes.BlackKing && boardViewModel.CurrentPlayer == Player.Black))
-                            {
-                                cell.IsOccupied = false;
-                                cell.Content = CheckerTypes.None;
-                                return true;
-                            }
-                            if ((sourceCell.Content == CheckerTypes.WhiteKing && boardViewModel.CurrentPlayer == Player.White) ||
-                           (sourceCell.Content == CheckerTypes.BlackKing && boardViewModel.CurrentPlayer == Player.Black))
-                            {
-                                cell.IsOccupied = false;
-                                cell.Content = CheckerTypes.None;
-                                return true;
+                                if ((sourceCell.Content == CheckerTypes.WhiteKing && boardViewModel.CurrentPlayer == Player.White) ||
+                               (sourceCell.Content == CheckerTypes.BlackKing && boardViewModel.CurrentPlayer == Player.Black))
+                                {
+                                    cell.IsOccupied = false;
+                                    cell.Content = CheckerTypes.None;
+                                    return true;
+                                }
+                                if ((sourceCell.Content == CheckerTypes.WhitePawn && boardViewModel.CurrentPlayer == Player.White) ||
+                               (sourceCell.Content == CheckerTypes.BlackPawn && boardViewModel.CurrentPlayer == Player.Black))
+                                {
+                                    cell.IsOccupied = false;
+                                    cell.Content = CheckerTypes.None;
+                                    return true;
+                                }
+
                             }
                         }
                     }
-                }
 
-            }
+                }
             return false;
         }
     }
