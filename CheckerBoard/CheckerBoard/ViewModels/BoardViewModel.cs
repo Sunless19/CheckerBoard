@@ -186,6 +186,7 @@ namespace CheckerBoard.ViewModels
                         gameModel.CurrentPlayer = gameModel.CurrentPlayer == Player.Black ? Player.White : Player.Black;
                         gameModel.IsMultipleCaptureInProgress = false;
                     }
+                    
                     sourceCell.IsSelected = false;
                 }
             }
