@@ -13,7 +13,6 @@ namespace CheckerBoard
         {
             InitializeComponent();
         }
-
         private void Cell_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
@@ -105,7 +104,5 @@ namespace CheckerBoard
                 }
             }
         }
-
-        
     }
 }

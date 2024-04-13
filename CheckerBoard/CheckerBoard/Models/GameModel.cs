@@ -15,6 +15,7 @@ namespace CheckerBoard.Models
         private bool _isMultipleCaptureInProgress = false;
         public bool notMovable = false;
         private Player _winner;
+        public int MaxPiecesRemaining=0;
         public ObservableCollection<Cell> Cells { get; set; }
         private PlayerWins _wins;
 
@@ -186,6 +187,10 @@ namespace CheckerBoard.Models
                 Winner = Player.White;
                 MessageBox.Show($"Player {Winner} has won!", "Winner", MessageBoxButton.OK, MessageBoxImage.Information);
                 IsGameNotInProgress = false;
+                if(MaxPiecesRemaining<WhitePieceCount)
+                {
+                    MaxPiecesRemaining = WhitePieceCount;
+                }
                 ResetGame();
                 IncrementWhiteWins();
 
@@ -195,6 +200,10 @@ namespace CheckerBoard.Models
                 Winner = Player.Black;
                 MessageBox.Show($"Player {Winner} has won!", "Winner", MessageBoxButton.OK, MessageBoxImage.Information);
                 IsGameNotInProgress = false;
+                if (MaxPiecesRemaining < BlackPieceCount)
+                {
+                    MaxPiecesRemaining = BlackPieceCount;
+                }
                 ResetGame();
                 IncrementBlackWins();
             }

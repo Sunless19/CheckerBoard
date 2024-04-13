@@ -3,6 +3,7 @@ using System.Windows.Input;
 using CheckerBoard;
 using CheckerBoard.Services;
 using CheckerBoard.Models;
+using CheckerBoard.Views;
 
 namespace CheckerBoard.ViewModels
 {
@@ -97,15 +98,18 @@ namespace CheckerBoard.ViewModels
             NewGameCommand = new RelayCommand(NewGame);
             SaveGameCommand = new RelayCommand(SaveGame);
             LoadGameCommand = new RelayCommand(LoadGame);
+            DisplayStatisticsCommand = new RelayCommand(DisplayStatistics);
             MultipleJumpCommand = new RelayCommand(MultipleJump);
             DisplayInfoCommand = new RelayCommand(DisplayInfo);
-            DisplayStatisticsCommand = new RelayCommand(DisplayStatistics);
+
         }
 
         private void DisplayStatistics(object obj)
         {
-            obj = this.GameModel;
-
+            StatisticsViewModel statisticsViewModel = new StatisticsViewModel(GameModel);
+            StatisticsView statisticsView = new StatisticsView();
+            statisticsView.DataContext = statisticsViewModel;
+            statisticsView.Show();
         }
 
         private void DisplayInfo(object obj)
