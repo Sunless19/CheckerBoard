@@ -99,6 +99,13 @@ namespace CheckerBoard.ViewModels
             LoadGameCommand = new RelayCommand(LoadGame);
             MultipleJumpCommand = new RelayCommand(MultipleJump);
             DisplayInfoCommand = new RelayCommand(DisplayInfo);
+            DisplayStatisticsCommand = new RelayCommand(DisplayStatistics);
+        }
+
+        private void DisplayStatistics(object obj)
+        {
+            obj = this.GameModel;
+
         }
 
         private void DisplayInfo(object obj)

@@ -28,7 +28,7 @@ namespace CheckerBoard
             
             gameModel.IsGameNotInProgress = false;
 
-            if (cell.IsOccupied && gameModel != null)
+            if (cell.IsOccupied && gameModel != null &&gameModel.IsMultipleCaptureInProgress==false)
             {
                 if (gameModel.SelectedCell != cell)
                 {
@@ -50,7 +50,7 @@ namespace CheckerBoard
                     var sourceCell = gameModel.SelectedCell;
                     var destinationCell = cell;
 
-                    if (gameModel.IsMoveValidPawn(sourceCell, destinationCell))
+                    if (gameModel.IsMoveValidPawn(sourceCell, destinationCell) && gameModel.IsMultipleCaptureInProgress==false)
                     {
                         gameModel.MakeMove(sourceCell, destinationCell);
                         sourceCell.IsSelected = false;
@@ -63,7 +63,7 @@ namespace CheckerBoard
                         else destinationCell.IsOccupied = true;
 
                     }
-                    else if (gameModel.isMoveValidKing(sourceCell, destinationCell))
+                    else if (gameModel.isMoveValidKing(sourceCell, destinationCell) && gameModel.IsMultipleCaptureInProgress==false)
                     {
                         gameModel.MakeMove(sourceCell, destinationCell);
                         sourceCell.IsSelected = false;
@@ -75,19 +75,20 @@ namespace CheckerBoard
                         }
                         else destinationCell.IsOccupied = true;
                     }
-                    //Trebuie sa se vada daca randul este al jucatorului pentru ca daca e rand albului si negru vrea sa ia atunci o sa ia dar nu se muta .
                     else if (existsPieceBetween(sourceCell, destinationCell, gameModel))
                     {
                         gameModel.MakeMove(sourceCell, destinationCell);
                         if (gameModel.HasMultipleJumps == true)
                         {
+                            gameModel.IsMultipleCaptureInProgress = true;
                             gameModel.CurrentPlayer = gameModel.CurrentPlayer == Player.Black ? Player.White : Player.Black;
                             destinationCell.IsSelected = true;
                             gameModel.SelectedCell = destinationCell;
                             gameModel.notMovable = true;
+
                         }
                         sourceCell.IsSelected = false;
-                        sourceCell.IsOccupied = false; 
+                        sourceCell.IsOccupied = false;
 
                         if (destinationCell.Content == CheckerTypes.None)
                         {
@@ -95,7 +96,11 @@ namespace CheckerBoard
                         }
                         else destinationCell.IsOccupied = true;
                     }
-                    //else if currentPlayer == White/Black si numaru de piese al White/Black atunci sa se afiseze Draw .
+                    else if(gameModel.HasMultipleJumps==true && gameModel.IsMultipleCaptureInProgress==true)
+                    {
+                        gameModel.CurrentPlayer = gameModel.CurrentPlayer == Player.Black ? Player.White : Player.Black;
+                        gameModel.IsMultipleCaptureInProgress = false;
+                    }
                     sourceCell.IsSelected = false;
                 }
             }
