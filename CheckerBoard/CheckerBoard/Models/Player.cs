@@ -12,4 +12,9 @@ namespace CheckerBoard.Models
         Black,
         White
     }
+    public class PlayerWins
+    {
+        public int BlackWins { get; set; }
+        public int WhiteWins { get; set; }
+    }
 }

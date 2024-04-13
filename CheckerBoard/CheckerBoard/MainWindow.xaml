@@ -6,8 +6,8 @@
         xmlns:vm="clr-namespace:CheckerBoard.ViewModels"
         xmlns:conv="clr-namespace:CheckerBoard.Converters"
         mc:Ignorable="d" 
-        Title="MainWindow" Height="750" Width="1200">  
- 
+        Title="MainWindow" Height="750" Width="1200">
+
     <Window.DataContext>
         <vm:BoardViewModel/>
     </Window.DataContext>
@@ -44,7 +44,7 @@
             </MenuItem>
         </Menu>
 
-        <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding GameModel.HasMultipleJumps}" Content="Allow Multiple Jumps" Margin="227,49,185,55" IsEnabled="{Binding GameModel.IsGameNotInProgress}"/>
+        <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding GameModel.HasMultipleJumps}" Content="Allow Multiple Jumps" Margin="227,21,185,83" IsEnabled="{Binding GameModel.IsGameNotInProgress}"/>
 
         <ItemsControl
             ItemsSource="{Binding GameModel.Cells}" 
@@ -151,6 +151,22 @@
             <TextBlock Text="{Binding GameModel.BlackPieceCount}" FontWeight="Bold"/>
             <TextBlock Text="                                             White Pieces: "/>
             <TextBlock Text="{Binding GameModel.WhitePieceCount}" FontWeight="Bold"/>
+
+        </StackPanel>
+        <StackPanel Margin="135,39,93,0" Grid.Column="1">
+            <TextBlock Text="Black Wins:" Width="64"/>
+            <TextBlock Text="{Binding GameModel.BlackWins}" FontWeight="Bold" Width="59" TextAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                <TextBlock.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="0.383"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </TextBlock.RenderTransform>
+            </TextBlock>
+            <TextBlock Text="White Wins:" Width="64" TextAlignment="Center"/>
+            <TextBlock Text="{Binding GameModel.WhiteWins}" FontWeight="Bold" Width="74" TextAlignment="Center"/>
         </StackPanel>
 
 

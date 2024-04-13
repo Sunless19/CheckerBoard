@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using CheckerBoard.Models;
+using CheckerBoard.Services;
 using CheckerBoard.ViewModels;
 
 namespace CheckerBoard.Models
@@ -14,10 +15,9 @@ namespace CheckerBoard.Models
         private bool _isMultipleCaptureInProgress = false;
         public bool notMovable = false;
         private Player _winner;
-
-
-
         public ObservableCollection<Cell> Cells { get; set; }
+        private PlayerWins _wins;
+
         public Player Winner
         {
             get { return _winner; }
@@ -36,7 +36,6 @@ namespace CheckerBoard.Models
                 OnPropertyChanged(nameof(IsMultipleCaptureInProgress));
             }
         }
-
         public bool IsGameNotInProgress
         {
             get { return _IsGameNotInProgress; }
@@ -67,7 +66,6 @@ namespace CheckerBoard.Models
                 }
             }
         }
-
         public Player CurrentPlayer
         {
             get { return _currentPlayer; }
@@ -78,14 +76,17 @@ namespace CheckerBoard.Models
             }
         }
         public int BlackPieceCount => Cells.Count(cell => cell.Content == CheckerTypes.BlackPawn || cell.Content == CheckerTypes.BlackKing);
-
         public int WhitePieceCount => Cells.Count(cell => cell.Content == CheckerTypes.WhitePawn || cell.Content == CheckerTypes.WhiteKing);
         public GameModel() {
+            var filesService = new FilesService();
+            _wins = filesService.LoadWins();
             OnPropertyChanged(nameof(BlackPieceCount));
             OnPropertyChanged(nameof(WhitePieceCount));
         }
         public GameModel(bool ok)
         {
+            var filesService = new FilesService();
+            _wins = filesService.LoadWins();
             Cells = new ObservableCollection<Cell>();
             CurrentPlayer = Player.White;
 
@@ -111,10 +112,39 @@ namespace CheckerBoard.Models
             OnPropertyChanged(nameof(BlackPieceCount));
             OnPropertyChanged(nameof(WhitePieceCount));
         }
-
-
-
-
+        public void SaveWins()
+        {
+            var filesService = new FilesService();
+            filesService.SaveWins(_wins);
+        }
+        public int BlackWins
+        {
+            get => _wins.BlackWins;
+            set
+            {
+                _wins.BlackWins = value;
+                OnPropertyChanged(nameof(BlackWins));
+            }
+        }
+        public int WhiteWins
+        {
+            get => _wins.WhiteWins;
+            set
+            {
+                _wins.WhiteWins = value;
+                OnPropertyChanged(nameof(WhiteWins));
+            }
+        }
+        public void IncrementBlackWins()
+        {
+            BlackWins++;
+            SaveWins();
+        }
+        public void IncrementWhiteWins()
+        {
+            WhiteWins++;
+            SaveWins();
+        }
         public void MakeMove(Cell source, Cell destination)
         {
             if (destination.IsOccupied && notMovable) { CurrentPlayer = CurrentPlayer == Player.Black ? Player.White : Player.Black; return; }
@@ -157,6 +187,8 @@ namespace CheckerBoard.Models
                 MessageBox.Show($"Player {Winner} has won!", "Winner", MessageBoxButton.OK, MessageBoxImage.Information);
                 IsGameNotInProgress = false;
                 ResetGame();
+                IncrementWhiteWins();
+
             }
             else if (WhitePieceCount == 0)
             {
@@ -164,9 +196,9 @@ namespace CheckerBoard.Models
                 MessageBox.Show($"Player {Winner} has won!", "Winner", MessageBoxButton.OK, MessageBoxImage.Information);
                 IsGameNotInProgress = false;
                 ResetGame();
+                IncrementBlackWins();
             }
         }
-
         public bool IsMoveValidPawn(Cell source, Cell destination)
         {
             if (source.RowIndex == destination.RowIndex && source.ColumnIndex == destination.ColumnIndex) { return false; }
@@ -198,7 +230,6 @@ namespace CheckerBoard.Models
 
             return true;
         }
-
         public bool isMoveValidKing(Cell source, Cell destination)
         {
             if (source.RowIndex == destination.RowIndex && source.ColumnIndex == destination.ColumnIndex) { return false; }
@@ -238,6 +269,60 @@ namespace CheckerBoard.Models
 
             return true;
         }
+        public bool existsPieceBetween(Cell sourceCell, Cell destinationCell, GameModel gameModel)
+        {
+            if (destinationCell.RowIndex % 2 == destinationCell.ColumnIndex % 2) { return false; }
+            float betweenRowIndex = (sourceCell.RowIndex + destinationCell.RowIndex) / 2;
+            float betweenColumnIndex = (sourceCell.ColumnIndex + destinationCell.ColumnIndex) / 2;
+
+            if (sourceCell.Content == CheckerTypes.WhiteKing || sourceCell.Content == CheckerTypes.BlackKing || (sourceCell.Content == CheckerTypes.BlackPawn && destinationCell.RowIndex > sourceCell.RowIndex) || (sourceCell.Content == CheckerTypes.WhitePawn && destinationCell.RowIndex < sourceCell.RowIndex))
+                if (!destinationCell.IsOccupied)
+                {
+                    foreach (var cell in gameModel.Cells)
+                    {
+                        if (cell.RowIndex == betweenRowIndex && cell.ColumnIndex == betweenColumnIndex)
+                        {
+                            if (cell.IsOccupied && ((cell.Content == CheckerTypes.BlackPawn && sourceCell.Content != cell.Content) || (cell.Content == CheckerTypes.WhitePawn && sourceCell.Content != cell.Content)))
+                            {
+                                if ((sourceCell.Content == CheckerTypes.WhitePawn && gameModel.CurrentPlayer == Player.White) ||
+                               (sourceCell.Content == CheckerTypes.BlackPawn && gameModel.CurrentPlayer == Player.Black))
+                                {
+                                    cell.IsOccupied = false;
+                                    cell.Content = CheckerTypes.None;
+                                    return true;
+                                }
+                                else if ((sourceCell.Content == CheckerTypes.WhiteKing && gameModel.CurrentPlayer == Player.White) ||
+                               (sourceCell.Content == CheckerTypes.BlackKing && gameModel.CurrentPlayer == Player.Black))
+                                {
+                                    cell.IsOccupied = false;
+                                    cell.Content = CheckerTypes.None;
+                                    return true;
+                                }
+                            }
+                            else if (cell.IsOccupied && ((cell.Content == CheckerTypes.BlackKing && sourceCell.Content != cell.Content) || (cell.Content == CheckerTypes.WhiteKing && sourceCell.Content != cell.Content)))
+                            {
+                                if ((sourceCell.Content == CheckerTypes.WhiteKing && gameModel.CurrentPlayer == Player.White) ||
+                               (sourceCell.Content == CheckerTypes.BlackKing && gameModel.CurrentPlayer == Player.Black))
+                                {
+                                    cell.IsOccupied = false;
+                                    cell.Content = CheckerTypes.None;
+                                    return true;
+                                }
+                                if ((sourceCell.Content == CheckerTypes.WhitePawn && gameModel.CurrentPlayer == Player.White) ||
+                               (sourceCell.Content == CheckerTypes.BlackPawn && gameModel.CurrentPlayer == Player.Black))
+                                {
+                                    cell.IsOccupied = false;
+                                    cell.Content = CheckerTypes.None;
+                                    return true;
+                                }
+
+                            }
+                        }
+                    }
+
+                }
+            return false;
+        }
         public void ResetGame()
         {
             Cells.Clear();
@@ -262,7 +347,8 @@ namespace CheckerBoard.Models
                     }
                 }
             }
-
+            OnPropertyChanged(nameof(BlackPieceCount));
+            OnPropertyChanged(nameof(WhitePieceCount));
             // Resetează starea jocului
             CurrentPlayer = Player.White;
             Winner = Player.None;

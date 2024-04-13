@@ -75,7 +75,7 @@ namespace CheckerBoard
                         }
                         else destinationCell.IsOccupied = true;
                     }
-                    else if (existsPieceBetween(sourceCell, destinationCell, gameModel))
+                    else if (gameModel.existsPieceBetween(sourceCell, destinationCell, gameModel))
                     {
                         gameModel.MakeMove(sourceCell, destinationCell);
                         if (gameModel.HasMultipleJumps == true)
@@ -106,59 +106,6 @@ namespace CheckerBoard
             }
         }
 
-        private bool existsPieceBetween(Cell sourceCell, Cell destinationCell, GameModel gameModel)
-        {
-            if (destinationCell.RowIndex % 2 == destinationCell.ColumnIndex % 2) { return false;}
-            float betweenRowIndex = (sourceCell.RowIndex + destinationCell.RowIndex) / 2;
-            float betweenColumnIndex = (sourceCell.ColumnIndex + destinationCell.ColumnIndex) / 2;
-
-            if (sourceCell.Content == CheckerTypes.WhiteKing || sourceCell.Content == CheckerTypes.BlackKing || (sourceCell.Content == CheckerTypes.BlackPawn && destinationCell.RowIndex > sourceCell.RowIndex) || (sourceCell.Content == CheckerTypes.WhitePawn && destinationCell.RowIndex < sourceCell.RowIndex))
-                if (!destinationCell.IsOccupied)
-                {
-                    foreach (var cell in gameModel.Cells)
-                    {
-                        if (cell.RowIndex == betweenRowIndex && cell.ColumnIndex == betweenColumnIndex)
-                        {
-                            if (cell.IsOccupied && ((cell.Content == CheckerTypes.BlackPawn && sourceCell.Content != cell.Content) || (cell.Content == CheckerTypes.WhitePawn && sourceCell.Content != cell.Content)))
-                            {
-                                if ((sourceCell.Content == CheckerTypes.WhitePawn && gameModel.CurrentPlayer == Player.White) ||
-                               (sourceCell.Content == CheckerTypes.BlackPawn && gameModel.CurrentPlayer == Player.Black))
-                                {
-                                    cell.IsOccupied = false;
-                                    cell.Content = CheckerTypes.None;
-                                    return true;
-                                }
-                                else if ((sourceCell.Content == CheckerTypes.WhiteKing && gameModel.CurrentPlayer == Player.White) ||
-                               (sourceCell.Content == CheckerTypes.BlackKing && gameModel.CurrentPlayer == Player.Black))
-                                {
-                                    cell.IsOccupied = false;
-                                    cell.Content = CheckerTypes.None;
-                                    return true;
-                                }
-                            }
-                            else if (cell.IsOccupied && ((cell.Content == CheckerTypes.BlackKing && sourceCell.Content != cell.Content) || (cell.Content == CheckerTypes.WhiteKing && sourceCell.Content != cell.Content)))
-                            {
-                                if ((sourceCell.Content == CheckerTypes.WhiteKing && gameModel.CurrentPlayer == Player.White) ||
-                               (sourceCell.Content == CheckerTypes.BlackKing && gameModel.CurrentPlayer == Player.Black))
-                                {
-                                    cell.IsOccupied = false;
-                                    cell.Content = CheckerTypes.None;
-                                    return true;
-                                }
-                                if ((sourceCell.Content == CheckerTypes.WhitePawn && gameModel.CurrentPlayer == Player.White) ||
-                               (sourceCell.Content == CheckerTypes.BlackPawn && gameModel.CurrentPlayer == Player.Black))
-                                {
-                                    cell.IsOccupied = false;
-                                    cell.Content = CheckerTypes.None;
-                                    return true;
-                                }
-
-                            }
-                        }
-                    }
-
-                }
-            return false;
-        }
+        
     }
 }
