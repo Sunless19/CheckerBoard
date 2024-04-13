@@ -208,6 +208,7 @@ namespace CheckerBoard.Models
                 IncrementBlackWins();
             }
         }
+
         public bool IsMoveValidPawn(Cell source, Cell destination)
         {
             if (source.RowIndex == destination.RowIndex && source.ColumnIndex == destination.ColumnIndex) { return false; }
@@ -364,5 +365,7 @@ namespace CheckerBoard.Models
             IsGameNotInProgress = true;
 
         }
+
     }
+
 }

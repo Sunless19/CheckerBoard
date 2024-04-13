@@ -4,6 +4,7 @@ using CheckerBoard;
 using CheckerBoard.Services;
 using CheckerBoard.Models;
 using CheckerBoard.Views;
+using System.Windows.Controls;
 
 namespace CheckerBoard.ViewModels
 {
@@ -12,8 +13,6 @@ namespace CheckerBoard.ViewModels
         private readonly FilesService _jsonService;
 
         private GameModel _gameModel;
-
-
         public ICommand ClickCellCommand { get; set; }
 
         public ICommand MovePieceCommand { get; set; }
@@ -29,6 +28,7 @@ namespace CheckerBoard.ViewModels
         public ICommand DisplayInfoCommand { get; set; }
 
         public ICommand DisplayStatisticsCommand { get; set; }
+
         public GameModel GameModel
         {
             get => _gameModel;
@@ -62,9 +62,6 @@ namespace CheckerBoard.ViewModels
                 GameModel.HasMultipleJumps = false;
             }
         }
-
-
-
         public void SaveGame(object parameter)
         {
             _jsonService.SaveObjectToFile(GameModel);
@@ -80,13 +77,13 @@ namespace CheckerBoard.ViewModels
                     GameModel.Cells.Add(cell); // Adaugă celulele încărcate în modelul actual
                     
                 }
-                
                 GameModel.CurrentPlayer = loadedGameModel.CurrentPlayer;
                 GameModel.IsGameNotInProgress = loadedGameModel.IsGameNotInProgress;
                 GameModel.SelectedCell = loadedGameModel.SelectedCell;
                 GameModel.Winner = loadedGameModel.Winner;
                 GameModel.HasMultipleJumps = loadedGameModel.HasMultipleJumps;
-                
+                OnPropertyChanged(nameof(GameModel.BlackPieceCount));
+                OnPropertyChanged(nameof(GameModel.WhitePieceCount));
             }
         }
 
@@ -101,7 +98,97 @@ namespace CheckerBoard.ViewModels
             DisplayStatisticsCommand = new RelayCommand(DisplayStatistics);
             MultipleJumpCommand = new RelayCommand(MultipleJump);
             DisplayInfoCommand = new RelayCommand(DisplayInfo);
+            ClickCellCommand = new RelayCommand(ExecuteClickCell);
 
+        }
+
+        private void ExecuteClickCell(object parameter)
+        {
+            
+            var gameModel = GameModel;
+            var cell = parameter as Cell;
+
+            if (cell == null)
+                return;
+
+            gameModel.IsGameNotInProgress = false;
+
+            if (cell.IsOccupied && gameModel != null && gameModel.IsMultipleCaptureInProgress == false)
+            {
+                if (gameModel.SelectedCell != cell)
+                {
+                    if (gameModel.SelectedCell != null)
+                        gameModel.SelectedCell.IsSelected = false;
+
+                    cell.IsSelected = true;
+                    gameModel.SelectedCell = cell;
+                }
+                else
+                {
+                    cell.IsSelected = false;
+                }
+            }
+            else
+            {
+                if (gameModel != null && gameModel.SelectedCell != null)
+                {
+                    var sourceCell = gameModel.SelectedCell;
+                    var destinationCell = cell;
+
+                    if (gameModel.IsMoveValidPawn(sourceCell, destinationCell) && gameModel.IsMultipleCaptureInProgress == false)
+                    {
+                        gameModel.MakeMove(sourceCell, destinationCell);
+                        sourceCell.IsSelected = false;
+                        sourceCell.IsOccupied = false;
+                        gameModel.notMovable = false;
+                        if (destinationCell.Content == CheckerTypes.None)
+                        {
+                            destinationCell.IsOccupied = false;
+                        }
+                        else destinationCell.IsOccupied = true;
+
+                    }
+                    else if (gameModel.isMoveValidKing(sourceCell, destinationCell) && gameModel.IsMultipleCaptureInProgress == false)
+                    {
+                        gameModel.MakeMove(sourceCell, destinationCell);
+                        sourceCell.IsSelected = false;
+                        sourceCell.IsOccupied = false;
+                        gameModel.notMovable = false;
+                        if (destinationCell.Content == CheckerTypes.None)
+                        {
+                            destinationCell.IsOccupied = false;
+                        }
+                        else destinationCell.IsOccupied = true;
+                    }
+                    else if (gameModel.existsPieceBetween(sourceCell, destinationCell, gameModel))
+                    {
+                        gameModel.MakeMove(sourceCell, destinationCell);
+                        if (gameModel.HasMultipleJumps == true)
+                        {
+                            gameModel.IsMultipleCaptureInProgress = true;
+                            gameModel.CurrentPlayer = gameModel.CurrentPlayer == Player.Black ? Player.White : Player.Black;
+                            destinationCell.IsSelected = true;
+                            gameModel.SelectedCell = destinationCell;
+                            gameModel.notMovable = true;
+
+                        }
+                        sourceCell.IsSelected = false;
+                        sourceCell.IsOccupied = false;
+
+                        if (destinationCell.Content == CheckerTypes.None)
+                        {
+                            destinationCell.IsOccupied = false;
+                        }
+                        else destinationCell.IsOccupied = true;
+                    }
+                    else if (gameModel.HasMultipleJumps == true && gameModel.IsMultipleCaptureInProgress == true)
+                    {
+                        gameModel.CurrentPlayer = gameModel.CurrentPlayer == Player.Black ? Player.White : Player.Black;
+                        gameModel.IsMultipleCaptureInProgress = false;
+                    }
+                    sourceCell.IsSelected = false;
+                }
+            }
         }
 
         private void DisplayStatistics(object obj)

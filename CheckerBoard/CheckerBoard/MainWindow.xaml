@@ -61,7 +61,8 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button Click="Cell_Click">
+                    <Button Command="{Binding DataContext.ClickCellCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                        CommandParameter="{Binding}" Click="Button_Click">
                         <Button.Template>
                             <ControlTemplate>
                                 <Border Width="65"
